@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retro Radio Learner</title>
+    <meta name="theme-color" content="#6d4c41">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Radio World">
+    <title>Retro Radio World</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="radio-body">
-        <h1 class="screen-title">Retro Radio Learner</h1>
+        <h1 class="screen-title">Retro Radio World</h1>
         
         <div class="display-panel">
             <div id="meter-display">
@@ -29,8 +35,11 @@
             <div class="filter-group">
                 <label for="country">Country:</label>
                 <select id="country">
+                    <option value="">🌍 All</option>
                     <option value="US">🇺🇸 U.S.A.</option>
                     <option value="GB">🇬🇧 U.K.</option>
+                    <option value="AU">🇦🇺 Australia</option>
+                    <option value="CA">🇨🇦 Canada</option>
                     <option value="JP">🇯🇵 Japan</option>
                 </select>
                 <input type="text" id="search-input" placeholder="Search station...">

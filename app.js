@@ -1,7 +1,7 @@
 const BASE_URL = 'https://de1.api.radio-browser.info/json/stations/search?';
 const JAPAN_LANGUAGE = 'japanese';
 
-let currentCountry = 'US';
+let currentCountry = ''; // Empty = All countries
 let currentTag = '';
 let currentSearchTerm = '';
 let animationFrameId;
@@ -73,20 +73,31 @@ function isFavorite(stationUuid) {
 async function fetchStations() {
     stationListElement.innerHTML = '<div class="loading">📡 Searching...</div>';
 
-    // Set language filter to Japanese for Japan, English for others
-    const languageFilter = (currentCountry === 'JP') ? JAPAN_LANGUAGE : 'english';
+    // Set language filter based on country
+    let languageFilter = '';
+    if (currentCountry === 'JP') {
+        languageFilter = JAPAN_LANGUAGE;
+    } else if (currentCountry && currentCountry !== '') {
+        // English-speaking countries: US, GB, AU, CA
+        languageFilter = 'english';
+    }
+    // If currentCountry is empty (All), no language filter
 
     // Build API query parameters
-    const queryParams = new URLSearchParams({
-        countrycode: currentCountry,
+    const params = {
         tag: currentTag,
         name: currentSearchTerm,
-        language: languageFilter,
         hidebroken: 'true',
         limit: 50,
         order: 'votes',
         reverse: 'true'
-    });
+    };
+
+    // Add optional parameters
+    if (currentCountry) params.countrycode = currentCountry;
+    if (languageFilter) params.language = languageFilter;
+
+    const queryParams = new URLSearchParams(params);
 
     try {
         const url = `${BASE_URL}${queryParams.toString()}`;
@@ -292,6 +303,13 @@ genreButtons.forEach(button => {
         fetchStations();
     });
 });
+
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+        .then(() => console.log('✅ PWA ready'))
+        .catch(err => console.log('⚠️ Service Worker registration failed:', err));
+}
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {

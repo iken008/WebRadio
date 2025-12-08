@@ -242,6 +242,11 @@ body {
         margin-bottom: 15px;
     }
 
+    /* スマホでは音量コントロールを非表示（ハードウェアボタンを使用） */
+    .volume-control-panel {
+        display: none;
+    }
+
     .filter-group {
         flex-direction: column;
         gap: 8px;
