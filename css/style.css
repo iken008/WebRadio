@@ -118,6 +118,27 @@ body {
     color: #aed581;
 }
 
+/* Station info area */
+#station-info {
+    cursor: default;
+    user-select: none;
+}
+
+#station-info .now-playing {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+#station-info .now-playing:hover {
+    background-color: rgba(255, 140, 0, 0.1);
+}
+
+#station-info .now-playing:active {
+    background-color: rgba(255, 140, 0, 0.2);
+}
+
 /* 制御パネルと入力 */
 .controls-panel {
     display: flex;
@@ -130,6 +151,21 @@ body {
     display: flex;
     gap: 10px;
     align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-group label {
+    flex-shrink: 0;
+}
+
+.filter-group select {
+    flex-shrink: 0;
+    min-width: 150px;
+}
+
+.filter-group input[type="text"] {
+    flex: 1;
+    min-width: 0;
 }
 
 /* ジャンルボタン (変更なし) */

@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#6d4c41">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Radio World">
     <title>Retro Radio World</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="apple-touch-icon" href="images/icon-180.png">
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="radio-body">
@@ -34,7 +34,7 @@
         <div class="controls-panel">
             <div class="filter-group">
                 <label for="country">Country:</label>
-                <select id="country">
+                <select id="country" autocomplete="off">
                     <option value="">🌍 All</option>
                     <option value="US">🇺🇸 U.S.A.</option>
                     <option value="GB">🇬🇧 U.K.</option>
@@ -42,7 +42,7 @@
                     <option value="CA">🇨🇦 Canada</option>
                     <option value="JP">🇯🇵 Japan</option>
                 </select>
-                <input type="text" id="search-input" placeholder="Search station...">
+                <input type="text" id="search-input" placeholder="Search station..." autocomplete="off">
             </div>
 
             <div class="genre-buttons">
@@ -60,6 +60,6 @@
         <audio id="audio-player"></audio>
     </div>
 
-    <script src="app.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
