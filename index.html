@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Radio Learner</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="radio-body">
+        <h1 class="screen-title">Retro Radio Learner</h1>
+        
+        <div class="display-panel">
+            <div id="meter-display">
+                <canvas id="waveform-canvas" width="360" height="50"></canvas>
+            </div>
+            <div class="volume-control-panel">
+                <button id="mute-btn" class="mute-btn">🔊</button>
+                <input type="range" id="volume-control" min="0" max="100" value="100">
+                <span id="volume-value">100%</span>
+            </div>
+            <div id="station-info">
+                <p>⚙️ Ready. Select a station.</p>
+            </div>
+        </div>
+
+        <div class="controls-panel">
+            <div class="filter-group">
+                <label for="country">Country:</label>
+                <select id="country">
+                    <option value="US">🇺🇸 U.S.A.</option>
+                    <option value="GB">🇬🇧 U.K.</option>
+                    <option value="JP">🇯🇵 Japan</option>
+                </select>
+                <input type="text" id="search-input" placeholder="Search station...">
+            </div>
+
+            <div class="genre-buttons">
+                <button class="genre-btn active" data-tag="">All</button>
+                <button class="genre-btn" data-tag="news">News</button>
+                <button class="genre-btn" data-tag="music">Music</button>
+                <button class="genre-btn" data-tag="talk">Talk</button>
+                <button class="fav-filter-btn" id="fav-filter-btn">⭐ Favorites</button>
+            </div>
+        </div>
+        
+        <div id="station-list" class="station-list-container">
+            </div>
+        
+        <audio id="audio-player"></audio>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

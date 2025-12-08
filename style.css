@@ -1,0 +1,284 @@
+/* ベースリセットとフォント */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #e8e4d2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 10px;
+}
+
+/* ラジオ本体のフレーム */
+.radio-body {
+    width: 100%;
+    max-width: 400px;
+    background-color: #6d4c41;
+    border: 15px solid #a1887f;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+    color: #fff;
+}
+
+.screen-title {
+    text-align: center;
+    font-size: 1.5em;
+    border-bottom: 2px solid #8d6e63;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* メーター表示エリア (変更なし) */
+.display-panel {
+    background-color: #3e2723; 
+    color: #aed581; 
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 3px inset #212121; 
+    text-align: center;
+    min-height: 80px; 
+}
+
+#meter-display {
+    background-color: #212121;
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+#waveform-canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* 音量コントロール */
+.volume-control-panel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+.mute-btn {
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.2s;
+}
+
+.mute-btn:hover {
+    transform: scale(1.1);
+}
+
+.mute-btn:active {
+    transform: scale(0.95);
+}
+
+#volume-control {
+    flex: 1;
+    height: 6px;
+    background: #5d4037;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+#volume-control::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #ff8c00;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+#volume-control::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: #ff8c00;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+#volume-value {
+    min-width: 40px;
+    text-align: right;
+    color: #aed581;
+}
+
+/* 制御パネルと入力 */
+.controls-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.filter-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* ジャンルボタン (変更なし) */
+.genre-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.genre-btn, .fav-filter-btn {
+    padding: 6px 12px;
+    background-color: #5d4037;
+    border: none;
+    color: #fff;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-family: inherit;
+}
+
+.genre-btn:hover, .fav-filter-btn:hover {
+    background-color: #4e342e;
+}
+
+.genre-btn.active {
+    background-color: #ff8c00;
+}
+
+.fav-filter-btn.active {
+    background-color: #ff8c00;
+}
+
+/* --- 局リストエリアのスクロール適用 --- */
+
+.station-list-container {
+    background-color: #3e2723; /* リスト背景 */
+    border: 1px solid #212121;
+    height: 150px; /* ★高さを固定し、表示数を制限 */
+    overflow-y: scroll; /* ★縦スクロールを有効化 */
+    padding: 10px;
+    border-radius: 3px;
+}
+
+.station-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px dashed #5d4037;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 0.9em;
+}
+
+.station-item:hover {
+    background-color: #4e342e;
+}
+
+.station-info-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fav-btn {
+    background: none;
+    border: none;
+    color: #bcaaa4;
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 0 5px;
+    transition: transform 0.2s;
+}
+
+.fav-btn:hover {
+    transform: scale(1.2);
+}
+
+.fav-btn.favorited {
+    color: #ff8c00;
+}
+
+/* ローディング/エラーメッセージ (変更なし) */
+.loading, .no-results, .error-message {
+    text-align: center;
+    padding: 10px;
+    color: #bcaaa4;
+}
+
+#audio-player {
+    display: none;
+}
+
+/* スマホ・タブレット対応 */
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+        align-items: flex-start;
+    }
+
+    .radio-body {
+        border-width: 10px;
+        padding: 15px;
+    }
+
+    .screen-title {
+        font-size: 1.2em;
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+    }
+
+    .filter-group {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+    }
+
+    .filter-group label {
+        text-align: center;
+    }
+
+    #country, #search-input {
+        width: 100%;
+        font-size: 16px; /* iOS zooming prevention */
+    }
+
+    .genre-buttons {
+        gap: 5px;
+    }
+
+    .genre-btn, .fav-filter-btn {
+        padding: 8px 10px;
+        font-size: 0.85em;
+        flex: 1;
+        min-width: 70px;
+    }
+
+    .station-list-container {
+        height: 200px;
+    }
+
+    .station-item {
+        padding: 10px 8px;
+        font-size: 0.85em;
+    }
+
+    .fav-btn {
+        font-size: 1.4em;
+        padding: 0 8px;
+    }
+}
