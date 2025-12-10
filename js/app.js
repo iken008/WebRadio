@@ -1,6 +1,7 @@
-const BASE_URL = 'https://de1.api.radio-browser.info/json/stations/search?';
 const JAPAN_LANGUAGE = 'japanese';
+const SERVER_LIST_URL = 'https://all.api.radio-browser.info/json/servers';
 
+let baseUrl = null; // Will be set dynamically
 let currentCountry = ''; // Empty = All countries
 let currentTag = '';
 let currentSearchTerm = '';
@@ -27,6 +28,7 @@ let currentStationName = '';
 
 // Check if device is mobile
 function isMobileDevice() {
+    // Match CSS media query breakpoint
     return window.innerWidth <= 480;
 }
 
@@ -74,10 +76,68 @@ function isFavorite(stationUuid) {
     return loadFavorites().includes(stationUuid);
 }
 
+// --- Server Selection and Caching ---
+
+function saveServer(serverName) {
+    localStorage.setItem('radioServerName', serverName);
+}
+
+function loadServer() {
+    return localStorage.getItem('radioServerName');
+}
+
+async function selectRadioServer(forceNew = false) {
+    // Use cached server if available and not forcing new selection
+    if (!forceNew) {
+        const cached = loadServer();
+        if (cached) {
+            baseUrl = `https://${cached}/json/stations/search?`;
+            return cached;
+        }
+    }
+
+    try {
+        const response = await fetch(SERVER_LIST_URL);
+        if (!response.ok) throw new Error('Failed to fetch server list');
+
+        const servers = await response.json();
+        if (!servers || servers.length === 0) {
+            throw new Error('No servers available');
+        }
+
+        // Select random server from the list
+        const randomServer = servers[Math.floor(Math.random() * servers.length)];
+        const serverName = randomServer.name;
+
+        baseUrl = `https://${serverName}/json/stations/search?`;
+        saveServer(serverName);
+
+        console.log(`Using Radio Browser server: ${serverName}`);
+        return serverName;
+    } catch (error) {
+        console.error('Error selecting server:', error);
+        // Fallback to default server
+        const fallbackServer = 'de1.api.radio-browser.info';
+        baseUrl = `https://${fallbackServer}/json/stations/search?`;
+        saveServer(fallbackServer);
+        return fallbackServer;
+    }
+}
+
+function getStationByUuidUrl(uuid) {
+    const serverName = loadServer() || 'de1.api.radio-browser.info';
+    return `https://${serverName}/json/stations/byuuid/${uuid}`;
+}
+
 // --- API Calls and List Rendering ---
 
-async function fetchStations() {
+async function fetchStations(retryWithNewServer = true) {
     stationListElement.innerHTML = '<div class="loading">📡 Searching...</div>';
+
+    // Ensure server is selected
+    if (!baseUrl) {
+        await selectRadioServer();
+    }
 
     // If showing favorites only and country is "All", fetch favorite stations by UUID
     if (showFavoritesOnly && currentCountry === '') {
@@ -112,7 +172,7 @@ async function fetchStations() {
     const queryParams = new URLSearchParams(params);
 
     try {
-        const url = `${BASE_URL}${queryParams.toString()}`;
+        const url = `${baseUrl}${queryParams.toString()}`;
         const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const stations = await response.json();
@@ -120,7 +180,15 @@ async function fetchStations() {
         renderStationList(stations, stationListElement);
     } catch (error) {
         console.error("Error fetching stations:", error);
-        stationListElement.innerHTML = '<p class="error-message">Failed to fetch data.</p>';
+
+        // Retry with a new server if this is the first attempt
+        if (retryWithNewServer) {
+            console.log("Retrying with a different server...");
+            await selectRadioServer(true); // Force new server selection
+            await fetchStations(false); // Retry once with new server
+        } else {
+            stationListElement.innerHTML = '<p class="error-message">Failed to fetch data.</p>';
+        }
     }
 }
 
@@ -132,10 +200,15 @@ async function fetchFavoriteStations() {
         return;
     }
 
+    // Ensure server is selected
+    if (!baseUrl) {
+        await selectRadioServer();
+    }
+
     try {
         // Fetch each favorite station by UUID
         const stationPromises = favorites.map(uuid =>
-            fetch(`https://de1.api.radio-browser.info/json/stations/byuuid/${uuid}`)
+            fetch(getStationByUuidUrl(uuid))
                 .then(res => res.json())
                 .catch(err => {
                     console.error(`Failed to fetch station ${uuid}:`, err);
@@ -231,17 +304,23 @@ function playStation(url, name) {
 }
 
 function updateStationInfo(name, isPaused) {
+    const isMobile = isMobileDevice();
+    const screenWidth = window.innerWidth;
+    console.log(`updateStationInfo called: isMobile=${isMobile}, screenWidth=${screenWidth}, isPaused=${isPaused}`);
+
     let icon, statusText;
 
-    if (isMobileDevice()) {
-        // Mobile: use speaker icon always
-        icon = '🔊';
-        statusText = 'NOW PLAYING';
+    if (isMobile) {
+        // Mobile: use speaker icons for play/pause states
+        icon = isPaused ? '🔇' : '🔊';
+        statusText = isPaused ? 'PAUSED' : 'NOW PLAYING';
     } else {
         // PC: use play/pause icons
         icon = isPaused ? '⏸️' : '▶️';
         statusText = isPaused ? 'PAUSED' : 'NOW PLAYING';
     }
+
+    console.log(`Setting icon: ${icon}, statusText: ${statusText}`);
 
     stationInfoElement.innerHTML = `
         <div class="now-playing">
@@ -471,6 +550,10 @@ document.addEventListener('DOMContentLoaded', () => {
     audioPlayer.volume = savedVolume / 100;
     volumeValue.textContent = `${savedVolume}%`;
 
-    fetchStations();
+    // Initialize server and fetch stations
+    selectRadioServer().then(() => {
+        fetchStations();
+    });
+
     drawStaticWaveform();
 });
